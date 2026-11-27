@@ -5,38 +5,49 @@ const { MercadoPagoConfig, Payment, Preference } = require('mercadopago');
 const app = express();
 app.use(express.json());
 app.use(cors());
-app.use(express.static('public')); // Onde ficará o index.html
+app.use(express.static('public'));
 
-// 🔑 COLE SEU ACCESS TOKEN DO MERCADO PAGO AQUI:
 const MP_ACCESS_TOKEN = process.env.MP_ACCESS_TOKEN || 'SEU_ACCESS_TOKEN_AQUI';
 const client = new MercadoPagoConfig({ accessToken: MP_ACCESS_TOKEN });
 
-// Banco de dados em memória (em produção, trocar por PostgreSQL/SQLite)
+// 🔑 SUA SENHA SECRETA DE DONO PARA GERAR FICHAS GRÁTIS NO SITE:
+const CODIGO_ADMIN = 'ADMIN99';
+
 const usuarios = {
   'jogador1': {
     id: 'jogador1',
     email: 'jogador@email.com',
-    criadoEm: Date.now() - (48 * 60 * 60 * 1000), // Conta com 48h
-    fichas: 0,
-    logsUso: [] // Dossiê anti-chargeback
+    criadoEm: Date.now() - (48 * 60 * 60 * 1000),
+    fichas: 10, // Já começa com 10 fichas grátis para testar!
+    logsUso: []
   }
 };
 
-// Pacotes (Pix dá +20% de fichas bônus para incentivar pagamento sem estorno)
 const PACOTES = {
   'pacote_5': { titulo: '5 Fichas Arcade', preco: 5.00, fichasCartao: 5, fichasPix: 6 },
   'pacote_10': { titulo: '10 Fichas Arcade', preco: 10.00, fichasCartao: 10, fichasPix: 12 },
   'pacote_25': { titulo: '25 Fichas Arcade', preco: 25.00, fichasCartao: 25, fichasPix: 30 }
 };
 
-// 1. Consultar Saldo e Logs
 app.get('/api/usuario/:id', (req, res) => {
   const user = usuarios[req.params.id];
   if (!user) return res.status(404).json({ erro: 'Usuário não encontrado' });
   res.json({ fichas: user.fichas, logs: user.logsUso });
 });
 
-// 2. Gerar Pagamento (Pix Direto com QR Code OU Checkout Completo Cartão/Boleto)
+// Rota secreta do Administrador para recarregar fichas grátis
+app.post('/api/admin-fichas', (req, res) => {
+  const { userId, codigo } = req.body;
+  if (codigo !== CODIGO_ADMIN) {
+    return res.status(403).json({ erro: 'Código de administrador inválido.' });
+  }
+  if (usuarios[userId]) {
+    usuarios[userId].fichas += 50;
+    return res.json({ sucesso: true, fichas: usuarios[userId].fichas });
+  }
+  res.status(404).json({ erro: 'Usuário não encontrado.' });
+});
+
 app.post('/api/comprar', async (req, res) => {
   try {
     const { userId, pacoteId, metodo, aceitouTermos, cpf } = req.body;
@@ -50,13 +61,11 @@ app.post('/api/comprar', async (req, res) => {
     const pacote = PACOTES[pacoteId];
     if (!user || !pacote) return res.status(400).json({ erro: 'Dados inválidos.' });
 
-    // BLINDAGEM 1: Trava de segurança para contas novas no cartão (> R$ 30)
     const horasDeConta = (Date.now() - user.criadoEm) / (1000 * 60 * 60);
     if (metodo === 'checkout_completo' && horasDeConta < 24 && pacote.preco > 30) {
       return res.status(403).json({ erro: 'Contas novas têm limite de R$ 30 no cartão nas primeiras 24h. Use Pix!' });
     }
 
-    // Registra intenção de compra no dossiê anti-chargeback
     user.logsUso.push({
       evento: 'INICIO_COMPRA',
       pacote: pacoteId,
@@ -66,7 +75,6 @@ app.post('/api/comprar', async (req, res) => {
       dataHora: new Date().toISOString()
     });
 
-    // OPÇÃO A: PIX INSTANTÂNEO (Sem chance de estorno fácil + Bônus de fichas)
     if (metodo === 'pix') {
       const payment = new Payment(client);
       const result = await payment.create({
@@ -90,7 +98,6 @@ app.post('/api/comprar', async (req, res) => {
       });
     }
 
-    // OPÇÃO B: CHECKOUT PRO (Cartão de Crédito, Débito, Boleto e Pix)
     const preference = new Preference(client);
     const prefResult = await preference.create({
       body: {
@@ -118,7 +125,6 @@ app.post('/api/comprar', async (req, res) => {
   }
 });
 
-// 3. Webhook do Mercado Pago (Libera fichas automaticamente após pagamento)
 app.post('/api/webhook', async (req, res) => {
   try {
     const { type, data } = req.body;
@@ -147,7 +153,6 @@ app.post('/api/webhook', async (req, res) => {
   }
 });
 
-// 4. Inserir Ficha no Jogo (Desconta no servidor + Grava Prova de Consumo)
 app.post('/api/inserir-ficha', (req, res) => {
   const { userId, jogo } = req.body;
   const ipCliente = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
@@ -159,7 +164,6 @@ app.post('/api/inserir-ficha', (req, res) => {
 
   user.fichas -= 1;
 
-  // BLINDAGEM 2: Prova irrefutável de entrega e consumo do serviço digital
   user.logsUso.push({
     evento: 'FICHA_CONSUMIDA_NO_JOGO',
     jogoSelecionado: jogo,
@@ -173,3 +177,4 @@ app.post('/api/inserir-ficha', (req, res) => {
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Fliperama rodando na porta ${PORT}`));
+
