@@ -10,7 +10,6 @@ app.use(express.static('public'));
 const MP_ACCESS_TOKEN = process.env.MP_ACCESS_TOKEN || 'SEU_ACCESS_TOKEN_AQUI';
 const client = new MercadoPagoConfig({ accessToken: MP_ACCESS_TOKEN });
 
-// 👑 PASSE LIVRE EXCLUSIVO DO DONO (SOMENTE ESTE CPF ENTRA GRÁTIS):
 const CPF_DONO = '21370757760';
 
 const usuarios = {
@@ -18,7 +17,7 @@ const usuarios = {
     id: 'jogador1',
     email: 'jogador@email.com',
     criadoEm: Date.now() - (48 * 60 * 60 * 1000),
-    fichas: 0, // Todos começam com 0 fichas; só seu CPF libera grátis
+    fichas: 0,
     logsUso: []
   }
 };
@@ -45,12 +44,11 @@ app.post('/api/comprar', async (req, res) => {
     const pacote = PACOTES[pacoteId];
     if (!user || !pacote) return res.status(400).json({ erro: 'Dados inválidos.' });
 
-    // ⭐ VERIFICAÇÃO EXCLUSIVA DO SEU CPF (NENHUM OUTRO CPF ENTRA GRÁTIS):
     if (cpfLimpo === CPF_DONO) {
       user.fichas += 99;
       return res.json({
         tipo: 'vip_gratis',
-        mensagem: '👑 CPF do Proprietário confirmado! +99 Fichas liberadas na hora!',
+        mensagem: 'CPF do Proprietário confirmado! +99 Fichas liberadas na hora!',
         fichas: user.fichas
       });
     }
