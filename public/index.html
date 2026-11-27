@@ -3,46 +3,154 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Fliperama Fichas Online</title>
+  <title>NEO ARCADE • KOF • Metal Slug • Mortal Kombat</title>
   <style>
     * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-    body { background: #0d0d12; color: #fff; margin: 0; padding: 12px; text-align: center; }
-    .header { background: linear-gradient(135deg, #1e1e2f, #2a1b3d); border: 2px solid #f39c12; border-radius: 12px; padding: 15px; margin-bottom: 15px; }
-    .header h1 { margin: 0 0 8px; font-size: 20px; color: #f1c40f; letter-spacing: 1px; }
-    .saldo-box { background: #000; display: inline-block; padding: 8px 20px; border-radius: 20px; border: 1px solid #2ecc71; font-size: 18px; font-weight: bold; color: #2ecc71; }
-    
-    .card { background: #181824; border-radius: 12px; padding: 15px; margin-bottom: 15px; border: 1px solid #2c2c3e; }
-    select, input[type="text"] { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid #444; background: #222; color: #fff; font-size: 15px; }
-    
-    .termo { font-size: 12px; color: #bbb; text-align: left; display: flex; gap: 8px; align-items: flex-start; margin: 10px 0; background: #111; padding: 10px; border-radius: 8px; }
-    
-    .btn { width: 100%; padding: 14px; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 8px; color: #fff; }
+    body {
+      background: radial-gradient(circle at top, #1b0b2e 0%, #09090d 75%);
+      color: #fff;
+      margin: 0;
+      padding: 12px;
+      text-align: center;
+    }
+
+    /* Cabeçalho estilo Fliperama Neo Geo */
+    .header {
+      background: linear-gradient(135deg, #2b0909, #121024);
+      border: 2px solid #ff9f1c;
+      box-shadow: 0 0 18px rgba(255, 159, 28, 0.35);
+      border-radius: 14px;
+      padding: 14px;
+      margin-bottom: 14px;
+    }
+    .header h1 {
+      margin: 0 0 4px;
+      font-size: 21px;
+      color: #ffbf00;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      text-shadow: 2px 2px 0 #b30000;
+    }
+    .subtitulo { font-size: 11px; color: #ff6b6b; letter-spacing: 1px; margin-bottom: 10px; font-weight: bold; }
+    .saldo-box {
+      background: #000;
+      display: inline-block;
+      padding: 7px 22px;
+      border-radius: 20px;
+      border: 2px solid #2ecc71;
+      font-size: 18px;
+      font-weight: bold;
+      color: #2ecc71;
+      box-shadow: 0 0 10px rgba(46, 204, 113, 0.3);
+    }
+
+    /* Grade Visual dos Jogos Clássicos */
+    .catalogo-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    .jogo-card {
+      background: #161622;
+      border: 2px solid #2e2e42;
+      border-radius: 10px;
+      padding: 10px 8px;
+      cursor: pointer;
+      transition: 0.2s;
+      text-align: left;
+      position: relative;
+    }
+    .jogo-card.ativo {
+      border-color: #ffbf00;
+      background: linear-gradient(145deg, #2b1a0e, #181826);
+      box-shadow: 0 0 14px rgba(255, 191, 0, 0.45);
+    }
+    .jogo-badge {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: bold;
+      padding: 2px 6px;
+      border-radius: 4px;
+      margin-bottom: 5px;
+      text-transform: uppercase;
+    }
+    .badge-boss { background: #c0392b; color: #fff; }
+    .badge-coop { background: #27ae60; color: #fff; }
+    .badge-fatality { background: #8e44ad; color: #fff; }
+    .jogo-titulo { font-size: 14px; font-weight: bold; color: #fff; margin: 0; }
+    .jogo-desc { font-size: 11px; color: #aaa; margin: 3px 0 0; }
+
+    .card {
+      background: #14141f;
+      border-radius: 12px;
+      padding: 14px;
+      margin-bottom: 14px;
+      border: 1px solid #2c2c3e;
+    }
+    select, input[type="text"] {
+      width: 100%;
+      padding: 12px;
+      margin: 7px 0;
+      border-radius: 8px;
+      border: 1px solid #444;
+      background: #1e1e2c;
+      color: #fff;
+      font-size: 15px;
+    }
+    .termo {
+      font-size: 11px;
+      color: #bbb;
+      text-align: left;
+      display: flex;
+      gap: 8px;
+      align-items: flex-start;
+      margin: 10px 0;
+      background: #0d0d14;
+      padding: 10px;
+      border-radius: 8px;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 8px;
+      color: #fff;
+      text-transform: uppercase;
+    }
+    .btn-ficha {
+      background: linear-gradient(90deg, #e63946, #f77f00);
+      font-size: 17px;
+      box-shadow: 0 4px 18px rgba(247, 127, 0, 0.45);
+    }
     .btn-pix { background: #00b894; }
     .btn-cartao { background: #0984e3; }
-    .btn-ficha { background: #e17055; font-size: 18px; box-shadow: 0 4px 15px rgba(225, 112, 85, 0.4); }
-    .btn-admin { background: #6c5ce7; font-size: 13px; padding: 10px; }
 
-    /* Modo Tela Cheia do Fliperama no Celular */
+    /* TELA CHEIA DO JOGO + GAMEPAD VIRTUAL */
     #game-overlay {
       display: none;
       position: fixed;
       top: 0; left: 0;
       width: 100vw; height: 100vh;
       background: #000;
-      z-index: 9999;
+      z-index: 99999;
       flex-direction: column;
     }
     #barra-topo-jogo {
       background: #111;
-      padding: 8px 12px;
+      padding: 6px 10px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      border-bottom: 1px solid #f39c12;
+      border-bottom: 1px solid #ff9f1c;
     }
-    #game { width: 100%; flex: 1; }
+    #game { width: 100%; flex: 1; background: #000; }
 
-    #game-preview { width: 100%; height: 220px; background: #000; border: 3px solid #f39c12; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-direction: column; }
     #pix-area { display: none; background: #fff; color: #000; padding: 15px; border-radius: 10px; margin-top: 10px; }
     #pix-area img { width: 200px; height: 200px; }
     textarea { width: 100%; height: 60px; font-size: 11px; margin-top: 8px; }
@@ -50,48 +158,84 @@
 </head>
 <body>
 
-  <!-- TELA CHEIA DO JOGO + GAMEPAD VIRTUAL -->
+  <!-- TELA CHEIA REAL DO EMULADOR + CONTROLES VIRTUAIS 1P/2P -->
   <div id="game-overlay">
     <div id="barra-topo-jogo">
-      <span style="color:#f1c40f;font-weight:bold;font-size:14px;">🪙 CREDIT 01</span>
-      <button onclick="sairDoJogo()" style="background:#e74c3c;color:#fff;border:none;padding:6px 12px;border-radius:6px;font-weight:bold;">✖ Sair do Jogo</button>
+      <span style="color:#ffbf00;font-weight:bold;font-size:13px;" id="titulo-barra">🪙 INSERT COIN • 1P / 2P</span>
+      <div>
+        <button onclick="ativarTelaCheiaReal()" style="background:#2980b9;color:#fff;border:none;padding:5px 10px;border-radius:5px;font-weight:bold;margin-right:5px;">⛶ Tela Cheia</button>
+        <button onclick="sairDoJogo()" style="background:#e74c3c;color:#fff;border:none;padding:5px 10px;border-radius:5px;font-weight:bold;">✖ Sair</button>
+      </div>
     </div>
     <div id="game"></div>
   </div>
 
   <div class="header">
-    <h1>🕹️ ARCADE FICHAS MOBILE</h1>
+    <h1>🔥 NEO ARCADE FIGHTERS</h1>
+    <div class="subtitulo">KOF '98 • KOF RUGAL • METAL SLUG • MORTAL KOMBAT</div>
     <div class="saldo-box">🪙 <span id="saldo">0</span> FICHAS</div>
   </div>
 
-  <!-- TELA DO FLIPERAMA -->
+  <!-- CATÁLOGO VISUAL DOS CLÁSSICOS -->
   <div class="card">
-    <select id="seletor-jogo">
-      <option value="teste_nes" data-core="nes" data-rom="https://githubusercontent.com">🕹️ Jogo Teste Arcade (Rodar Agora - Sem Upload)</option>
-      <option value="sf2" data-core="fbneo" data-rom="sf2.zip">🥊 Street Fighter II (Requer sf2.zip na pasta public)</option>
-      <option value="mslug" data-core="fbneo" data-bios="neogeo.zip" data-rom="mslug.zip">🪖 Metal Slug (Requer mslug.zip + neogeo.zip)</option>
-      <option value="kof98" data-core="fbneo" data-bios="neogeo.zip" data-rom="kof98.zip">🔥 KOF '98 (Requer kof98.zip + neogeo.zip)</option>
-    </select>
+    <div style="font-size:13px;color:#ffbf00;font-weight:bold;margin-bottom:10px;">🕹️ ESCOLHA A MÁQUINA (1 OU 2 JOGADORES)</div>
 
-    <div id="game-preview">
-      <p style="color:#f1c40f;font-weight:bold;font-size:18px;margin:0;">INSERT COIN TO PLAY</p>
-      <p style="font-size:13px;color:#aaa;margin-top:8px;">Abre em Tela Cheia com Controles na Tela</p>
+    <div class="catalogo-grid">
+      <div class="jogo-card ativo" onclick="selecionarJogo(this, 'kof98', 'fbneo', 'kof98.zip', 'neogeo.zip', 'The King of Fighters \'98')">
+        <span class="jogo-badge badge-boss">VERSUS 2P</span>
+        <p class="jogo-titulo">🔥 KOF '98</p>
+        <p class="jogo-desc">The Slugfest • 1P / 2P</p>
+      </div>
+
+      <div class="jogo-card" onclick="selecionarJogo(this, 'kof95', 'fbneo', 'kof95.zip', 'neogeo.zip', 'KOF \'95 (Omega Rugal)')">
+        <span class="jogo-badge badge-boss">CHEFE RUGAL</span>
+        <p class="jogo-titulo">💀 KOF '95 Rugal</p>
+        <p class="jogo-desc">Omega Rugal • 1P / 2P</p>
+      </div>
+
+      <div class="jogo-card" onclick="selecionarJogo(this, 'mslug', 'fbneo', 'mslug.zip', 'neogeo.zip', 'Metal Slug Super Vehicle')">
+        <span class="jogo-badge badge-coop">CO-OP 2P</span>
+        <p class="jogo-titulo">🪖 Metal Slug</p>
+        <p class="jogo-desc">Ação Arcade • 1P / 2P</p>
+      </div>
+
+      <div class="jogo-card" onclick="selecionarJogo(this, 'mk2', 'fbneo', 'mk2.zip', '', 'Mortal Kombat II')">
+        <span class="jogo-badge badge-fatality">FATALITY</span>
+        <p class="jogo-titulo">🐉 Mortal Kombat II</p>
+        <p class="jogo-desc">Arcade Klassic • 1P / 2P</p>
+      </div>
+
+      <div class="jogo-card" onclick="selecionarJogo(this, 'sf2', 'fbneo', 'sf2.zip', '', 'Street Fighter II')">
+        <span class="jogo-badge badge-boss">CLÁSSICO</span>
+        <p class="jogo-titulo">🥊 Street Fighter II</p>
+        <p class="jogo-desc">World Warrior • 1P / 2P</p>
+      </div>
+
+      <div class="jogo-card" onclick="selecionarJogo(this, 'demo', 'nes', 'https://githubusercontent.com', '', 'Arcade Teste Instantâneo')">
+        <span class="jogo-badge badge-coop">TESTE RÁPIDO</span>
+        <p class="jogo-titulo">⚡ Demo Arcade</p>
+        <p class="jogo-desc">Roda sem subir ROM</p>
+      </div>
     </div>
 
-    <button id="btn-inserir" class="btn btn-ficha" onclick="inserirFicha()">🪙 INSERIR FICHA E JOGAR</button>
+    <div style="font-size:11px;color:#aaa;margin-bottom:8px;">
+      🎮 Controles virtuais na tela + suporte a <b>2 Jogadores</b> (Sala Online Netplay ou 2º Controle Bluetooth)
+    </div>
+
+    <button id="btn-inserir" class="btn btn-ficha" onclick="inserirFicha()">🪙 INSERIR FICHA E ENTRAR EM TELA CHEIA</button>
   </div>
 
-  <!-- LOJA DE FICHAS -->
+  <!-- CAIXA / COMPRA DE FICHAS -->
   <div class="card">
-    <h3 style="margin-top:0;color:#f1c40f;">💰 Comprar Fichas</h3>
-    
+    <h3 style="margin-top:0;color:#ffbf00;">💰 Comprar Fichas</h3>
+
     <select id="pacote">
       <option value="pacote_5">R$ 5,00 → 5 Fichas (6 Fichas no Pix!)</option>
       <option value="pacote_10">R$ 10,00 → 10 Fichas (12 Fichas no Pix!)</option>
       <option value="pacote_25">R$ 25,00 → 25 Fichas (30 Fichas no Pix!)</option>
     </select>
 
-    <input type="text" id="cpf" placeholder="Seu CPF (ou Código VIP/Admin)" maxlength="14">
+    <input type="text" id="cpf" placeholder="Digite seu CPF para liberar" maxlength="14">
 
     <label class="termo">
       <input type="checkbox" id="aceite-termos">
@@ -100,9 +244,7 @@
 
     <button class="btn btn-pix" onclick="comprar('pix')">⚡ PAGAR COM PIX (+20% FICHAS GRÁTIS)</button>
     <button class="btn btn-cartao" onclick="comprar('checkout_completo')">💳 CARTÃO DE CRÉDITO / DÉBITO / BOLETO</button>
-    <button class="btn btn-admin" onclick="resgatarAdmin()">🎟️ USAR CÓDIGO PROMOCIONAL / ADMIN</button>
 
-    <!-- ÁREA DO QR CODE PIX -->
     <div id="pix-area">
       <strong>Escaneie ou copie o Pix abaixo:</strong><br>
       <img id="pix-qr" src="" alt="QR Code Pix"><br>
@@ -114,27 +256,25 @@
   <script>
     const USER_ID = 'jogador1';
 
+    // Jogo selecionado padrão
+    let jogoAtual = {
+      id: 'kof98',
+      core: 'fbneo',
+      rom: 'kof98.zip',
+      bios: 'neogeo.zip',
+      nome: "The King of Fighters '98"
+    };
+
+    function selecionarJogo(elemento, id, core, rom, bios, nome) {
+      document.querySelectorAll('.jogo-card').forEach(c => c.classList.remove('ativo'));
+      elemento.classList.add('ativo');
+      jogoAtual = { id, core, rom, bios, nome };
+    }
+
     async function atualizarSaldo() {
       const res = await fetch(`/api/usuario/${USER_ID}`);
       const data = await res.json();
       document.getElementById('saldo').innerText = data.fichas;
-    }
-
-    async function resgatarAdmin() {
-      const codigo = document.getElementById('cpf').value.trim();
-      if (!codigo) return alert('Digite o código no campo acima primeiro!');
-
-      const res = await fetch('/api/admin-fichas', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: USER_ID, codigo })
-      });
-
-      const data = await res.json();
-      if (data.erro) return alert(data.erro);
-
-      alert('✅ +50 Fichas de Administrador creditadas!');
-      atualizarSaldo();
     }
 
     async function comprar(metodo) {
@@ -142,77 +282,3 @@
       const cpf = document.getElementById('cpf').value;
       const aceitouTermos = document.getElementById('aceite-termos').checked;
 
-      if (!aceitouTermos) return alert('Marque a caixa aceitando os termos antes de comprar.');
-      if (metodo === 'pix' && cpf.length < 11) return alert('Digite um CPF válido para gerar o Pix.');
-
-      const res = await fetch('/api/comprar', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: USER_ID, pacoteId, metodo, aceitouTermos, cpf })
-      });
-
-      const data = await res.json();
-      if (data.erro) return alert(data.erro);
-
-      if (data.tipo === 'pix') {
-        document.getElementById('pix-area').style.display = 'block';
-        document.getElementById('pix-qr').src = `data:image/png;base64,${data.qr_code_base64}`;
-        document.getElementById('pix-copia').value = data.qr_code;
-      } else if (data.tipo === 'link') {
-        window.location.href = data.init_point;
-      }
-    }
-
-    function copiarPix() {
-      const campo = document.getElementById('pix-copia');
-      campo.select();
-      document.execCommand('copy');
-      alert('Código Pix copiado! Pague no app do seu banco.');
-    }
-
-    async function inserirFicha() {
-      const select = document.getElementById('seletor-jogo');
-      const opcao = select.options[select.selectedIndex];
-      const jogoNome = opcao.text;
-
-      const res = await fetch('/api/inserir-ficha', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: USER_ID, jogo: jogoNome })
-      });
-
-      const data = await res.json();
-      if (data.erro) return alert(data.erro);
-
-      atualizarSaldo();
-      iniciarEmulador(opcao.dataset.core, opcao.dataset.rom, opcao.dataset.bios || '');
-    }
-
-    function iniciarEmulador(core, romUrl, biosUrl) {
-      // Abre o fliperama em tela cheia no celular
-      document.getElementById('game-overlay').style.display = 'flex';
-      document.getElementById('game').innerHTML = '';
-
-      window.EJS_player = '#game';
-      window.EJS_core = core;
-      window.EJS_gameUrl = romUrl;
-      if (biosUrl) window.EJS_biosUrl = biosUrl;
-      window.EJS_pathtodata = 'https://emulatorjs.org';
-      window.EJS_startOnLoaded = true;
-      window.EJS_language = 'pt-BR';
-      
-      // Força os controles virtuais (Gamepad Touch) a aparecerem na tela do celular
-      window.EJS_VirtualGamepadSettings = [
-        { type: "dpad", location: "left", left: "15px", bottom: "30px" },
-        { type: "button", text: "A", id: "a", location: "right", right: "20px", bottom: "40px" },
-        { type: "button", text: "B", id: "b", location: "right", right: "85px", bottom: "25px" },
-        { type: "button", text: "X", id: "x", location: "right", right: "20px", bottom: "105px" },
-        { type: "button", text: "Y", id: "y", location: "right", right: "85px", bottom: "90px" },
-        { type: "button", text: "START", id: "start", location: "center", left: "52%", bottom: "15px" },
-        { type: "button", text: "COIN", id: "select", location: "center", left: "32%", bottom: "15px" }
-      ];
-
-      const antigo = document.getElementById('ejs-loader');
-      if (antigo) antigo.remove();
-
-      const script = document.createElement('script');
