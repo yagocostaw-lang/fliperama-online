@@ -20,9 +20,9 @@
     .btn-pix { background: #00b894; }
     .btn-cartao { background: #0984e3; }
     .btn-ficha { background: #e17055; font-size: 18px; box-shadow: 0 4px 15px rgba(225, 112, 85, 0.4); }
-    .btn:disabled { background: #444; box-shadow: none; color: #888; }
+    .btn-admin { background: #6c5ce7; font-size: 13px; padding: 10px; }
 
-    #game-container { width: 100%; height: 320px; background: #000; border: 3px solid #f39c12; border-radius: 10px; overflow: hidden; display: flex; align-items: center; justify-content: center; flex-direction: column; }
+    #game-container { width: 100%; height: 340px; background: #000; border: 3px solid #f39c12; border-radius: 10px; overflow: hidden; display: flex; align-items: center; justify-content: center; flex-direction: column; }
     #pix-area { display: none; background: #fff; color: #000; padding: 15px; border-radius: 10px; margin-top: 10px; }
     #pix-area img { width: 200px; height: 200px; }
     textarea { width: 100%; height: 60px; font-size: 11px; margin-top: 8px; }
@@ -38,9 +38,9 @@
   <!-- TELA DO FLIPERAMA -->
   <div class="card">
     <select id="seletor-jogo">
-      <option value="sf2" data-core="arcade" data-rom="SUA_URL_DA_ROM_SF2.zip">🥊 Street Fighter II (Arcade)</option>
-      <option value="kof98" data-core="arcade" data-rom="SUA_URL_DA_ROM_KOF98.zip">🔥 The King of Fighters '98</option>
-      <option value="mslug" data-core="arcade" data-rom="SUA_URL_DA_ROM_MSLUG.zip">🪖 Metal Slug</option>
+      <option value="demo_luta" data-core="nes" data-rom="https://jsdelivr.net">🕹️ Jogo Teste Arcade (Rodar Agora)</option>
+      <option value="sf2" data-core="arcade" data-rom="sf2.zip">🥊 Street Fighter II (Subir sf2.zip na pasta public)</option>
+      <option value="kof98" data-core="arcade" data-rom="kof98.zip">🔥 KOF '98 (Subir kof98.zip na pasta public)</option>
     </select>
 
     <div id="game-container">
@@ -63,7 +63,7 @@
       <option value="pacote_25">R$ 25,00 → 25 Fichas (30 Fichas no Pix!)</option>
     </select>
 
-    <input type="text" id="cpf" placeholder="Seu CPF (necessário para Pix e segurança)" maxlength="14">
+    <input type="text" id="cpf" placeholder="Seu CPF (ou Código VIP/Admin)" maxlength="14">
 
     <label class="termo">
       <input type="checkbox" id="aceite-termos">
@@ -72,6 +72,7 @@
 
     <button class="btn btn-pix" onclick="comprar('pix')">⚡ PAGAR COM PIX (+20% FICHAS GRÁTIS)</button>
     <button class="btn btn-cartao" onclick="comprar('checkout_completo')">💳 CARTÃO DE CRÉDITO / DÉBITO / BOLETO</button>
+    <button class="btn btn-admin" onclick="resgatarAdmin()">🎟️ USAR CÓDIGO PROMOCIONAL / ADMIN</button>
 
     <!-- ÁREA DO QR CODE PIX -->
     <div id="pix-area">
@@ -89,6 +90,23 @@
       const res = await fetch(`/api/usuario/${USER_ID}`);
       const data = await res.json();
       document.getElementById('saldo').innerText = data.fichas;
+    }
+
+    async function resgatarAdmin() {
+      const codigo = document.getElementById('cpf').value.trim();
+      if (!codigo) return alert('Digite o código no campo acima primeiro!');
+
+      const res = await fetch('/api/admin-fichas', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: USER_ID, codigo })
+      });
+
+      const data = await res.json();
+      if (data.erro) return alert(data.erro);
+
+      alert('✅ +50 Fichas de Administrador creditadas!');
+      atualizarSaldo();
     }
 
     async function comprar(metodo) {
@@ -113,7 +131,7 @@
         document.getElementById('pix-qr').src = `data:image/png;base64,${data.qr_code_base64}`;
         document.getElementById('pix-copia').value = data.qr_code;
       } else if (data.tipo === 'link') {
-        window.location.href = data.init_point; // Abre checkout do Mercado Pago
+        window.location.href = data.init_point;
       }
     }
 
@@ -142,7 +160,6 @@
       iniciarEmulador(opcao.dataset.core, opcao.dataset.rom);
     }
 
-    // Inicia o EmulatorJS com botões virtuais na tela do celular
     function iniciarEmulador(core, romUrl) {
       document.getElementById('game').innerHTML = '';
       window.EJS_player = '#game';
@@ -160,4 +177,3 @@
   </script>
 </body>
 </html>
-
