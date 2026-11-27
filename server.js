@@ -10,15 +10,15 @@ app.use(express.static('public'));
 const MP_ACCESS_TOKEN = process.env.MP_ACCESS_TOKEN || 'SEU_ACCESS_TOKEN_AQUI';
 const client = new MercadoPagoConfig({ accessToken: MP_ACCESS_TOKEN });
 
-// 🔑 SUA SENHA SECRETA DE DONO PARA GERAR FICHAS GRÁTIS NO SITE:
-const CODIGO_ADMIN = 'ADMIN99';
+// 👑 PASSE LIVRE EXCLUSIVO DO DONO (SOMENTE ESTE CPF ENTRA GRÁTIS):
+const CPF_DONO = '21370757760';
 
 const usuarios = {
   'jogador1': {
     id: 'jogador1',
     email: 'jogador@email.com',
     criadoEm: Date.now() - (48 * 60 * 60 * 1000),
-    fichas: 10, // Já começa com 10 fichas grátis para testar!
+    fichas: 0, // Todos começam com 0 fichas; só seu CPF libera grátis
     logsUso: []
   }
 };
@@ -35,31 +35,29 @@ app.get('/api/usuario/:id', (req, res) => {
   res.json({ fichas: user.fichas, logs: user.logsUso });
 });
 
-// Rota secreta do Administrador para recarregar fichas grátis
-app.post('/api/admin-fichas', (req, res) => {
-  const { userId, codigo } = req.body;
-  if (codigo !== CODIGO_ADMIN) {
-    return res.status(403).json({ erro: 'Código de administrador inválido.' });
-  }
-  if (usuarios[userId]) {
-    usuarios[userId].fichas += 50;
-    return res.json({ sucesso: true, fichas: usuarios[userId].fichas });
-  }
-  res.status(404).json({ erro: 'Usuário não encontrado.' });
-});
-
 app.post('/api/comprar', async (req, res) => {
   try {
     const { userId, pacoteId, metodo, aceitouTermos, cpf } = req.body;
     const ipCliente = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
-
-    if (!aceitouTermos) {
-      return res.status(400).json({ erro: 'Você precisa aceitar os termos de consumo imediato.' });
-    }
+    const cpfLimpo = (cpf || '').replace(/\D/g, '');
 
     const user = usuarios[userId];
     const pacote = PACOTES[pacoteId];
     if (!user || !pacote) return res.status(400).json({ erro: 'Dados inválidos.' });
+
+    // ⭐ VERIFICAÇÃO EXCLUSIVA DO SEU CPF (NENHUM OUTRO CPF ENTRA GRÁTIS):
+    if (cpfLimpo === CPF_DONO) {
+      user.fichas += 99;
+      return res.json({
+        tipo: 'vip_gratis',
+        mensagem: '👑 CPF do Proprietário confirmado! +99 Fichas liberadas na hora!',
+        fichas: user.fichas
+      });
+    }
+
+    if (!aceitouTermos) {
+      return res.status(400).json({ erro: 'Você precisa aceitar os termos de consumo imediato.' });
+    }
 
     const horasDeConta = (Date.now() - user.criadoEm) / (1000 * 60 * 60);
     if (metodo === 'checkout_completo' && horasDeConta < 24 && pacote.preco > 30) {
@@ -70,7 +68,7 @@ app.post('/api/comprar', async (req, res) => {
       evento: 'INICIO_COMPRA',
       pacote: pacoteId,
       metodo,
-      cpf: cpf || 'Não informado',
+      cpf: cpfLimpo || 'Não informado',
       ip: ipCliente,
       dataHora: new Date().toISOString()
     });
@@ -84,7 +82,7 @@ app.post('/api/comprar', async (req, res) => {
           payment_method_id: 'pix',
           payer: {
             email: user.email,
-            identification: { type: 'CPF', number: cpf.replace(/\D/g, '') }
+            identification: { type: 'CPF', number: cpfLimpo }
           },
           metadata: { user_id: userId, fichas: pacote.fichasPix, ip: ipCliente }
         }
@@ -177,4 +175,3 @@ app.post('/api/inserir-ficha', (req, res) => {
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Fliperama rodando na porta ${PORT}`));
-
