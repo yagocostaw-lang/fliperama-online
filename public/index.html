@@ -22,13 +22,42 @@
     .btn-ficha { background: #e17055; font-size: 18px; box-shadow: 0 4px 15px rgba(225, 112, 85, 0.4); }
     .btn-admin { background: #6c5ce7; font-size: 13px; padding: 10px; }
 
-    #game-container { width: 100%; height: 340px; background: #000; border: 3px solid #f39c12; border-radius: 10px; overflow: hidden; display: flex; align-items: center; justify-content: center; flex-direction: column; }
+    /* Modo Tela Cheia do Fliperama no Celular */
+    #game-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      background: #000;
+      z-index: 9999;
+      flex-direction: column;
+    }
+    #barra-topo-jogo {
+      background: #111;
+      padding: 8px 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #f39c12;
+    }
+    #game { width: 100%; flex: 1; }
+
+    #game-preview { width: 100%; height: 220px; background: #000; border: 3px solid #f39c12; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-direction: column; }
     #pix-area { display: none; background: #fff; color: #000; padding: 15px; border-radius: 10px; margin-top: 10px; }
     #pix-area img { width: 200px; height: 200px; }
     textarea { width: 100%; height: 60px; font-size: 11px; margin-top: 8px; }
   </style>
 </head>
 <body>
+
+  <!-- TELA CHEIA DO JOGO + GAMEPAD VIRTUAL -->
+  <div id="game-overlay">
+    <div id="barra-topo-jogo">
+      <span style="color:#f1c40f;font-weight:bold;font-size:14px;">🪙 CREDIT 01</span>
+      <button onclick="sairDoJogo()" style="background:#e74c3c;color:#fff;border:none;padding:6px 12px;border-radius:6px;font-weight:bold;">✖ Sair do Jogo</button>
+    </div>
+    <div id="game"></div>
+  </div>
 
   <div class="header">
     <h1>🕹️ ARCADE FICHAS MOBILE</h1>
@@ -38,16 +67,15 @@
   <!-- TELA DO FLIPERAMA -->
   <div class="card">
     <select id="seletor-jogo">
-      <option value="demo_luta" data-core="nes" data-rom="https://jsdelivr.net">🕹️ Jogo Teste Arcade (Rodar Agora)</option>
-      <option value="sf2" data-core="arcade" data-rom="sf2.zip">🥊 Street Fighter II (Subir sf2.zip na pasta public)</option>
-      <option value="kof98" data-core="arcade" data-rom="kof98.zip">🔥 KOF '98 (Subir kof98.zip na pasta public)</option>
+      <option value="teste_nes" data-core="nes" data-rom="https://githubusercontent.com">🕹️ Jogo Teste Arcade (Rodar Agora - Sem Upload)</option>
+      <option value="sf2" data-core="fbneo" data-rom="sf2.zip">🥊 Street Fighter II (Requer sf2.zip na pasta public)</option>
+      <option value="mslug" data-core="fbneo" data-bios="neogeo.zip" data-rom="mslug.zip">🪖 Metal Slug (Requer mslug.zip + neogeo.zip)</option>
+      <option value="kof98" data-core="fbneo" data-bios="neogeo.zip" data-rom="kof98.zip">🔥 KOF '98 (Requer kof98.zip + neogeo.zip)</option>
     </select>
 
-    <div id="game-container">
-      <div id="game" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;flex-direction:column;">
-        <p style="color:#f1c40f;font-weight:bold;">INSERT COIN TO PLAY</p>
-        <p style="font-size:12px;color:#888;">1 Ficha = 1 Crédito no Arcade</p>
-      </div>
+    <div id="game-preview">
+      <p style="color:#f1c40f;font-weight:bold;font-size:18px;margin:0;">INSERT COIN TO PLAY</p>
+      <p style="font-size:13px;color:#aaa;margin-top:8px;">Abre em Tela Cheia com Controles na Tela</p>
     </div>
 
     <button id="btn-inserir" class="btn btn-ficha" onclick="inserirFicha()">🪙 INSERIR FICHA E JOGAR</button>
@@ -157,23 +185,34 @@
       if (data.erro) return alert(data.erro);
 
       atualizarSaldo();
-      iniciarEmulador(opcao.dataset.core, opcao.dataset.rom);
+      iniciarEmulador(opcao.dataset.core, opcao.dataset.rom, opcao.dataset.bios || '');
     }
 
-    function iniciarEmulador(core, romUrl) {
+    function iniciarEmulador(core, romUrl, biosUrl) {
+      // Abre o fliperama em tela cheia no celular
+      document.getElementById('game-overlay').style.display = 'flex';
       document.getElementById('game').innerHTML = '';
+
       window.EJS_player = '#game';
       window.EJS_core = core;
       window.EJS_gameUrl = romUrl;
+      if (biosUrl) window.EJS_biosUrl = biosUrl;
       window.EJS_pathtodata = 'https://emulatorjs.org';
       window.EJS_startOnLoaded = true;
+      window.EJS_language = 'pt-BR';
+      
+      // Força os controles virtuais (Gamepad Touch) a aparecerem na tela do celular
+      window.EJS_VirtualGamepadSettings = [
+        { type: "dpad", location: "left", left: "15px", bottom: "30px" },
+        { type: "button", text: "A", id: "a", location: "right", right: "20px", bottom: "40px" },
+        { type: "button", text: "B", id: "b", location: "right", right: "85px", bottom: "25px" },
+        { type: "button", text: "X", id: "x", location: "right", right: "20px", bottom: "105px" },
+        { type: "button", text: "Y", id: "y", location: "right", right: "85px", bottom: "90px" },
+        { type: "button", text: "START", id: "start", location: "center", left: "52%", bottom: "15px" },
+        { type: "button", text: "COIN", id: "select", location: "center", left: "32%", bottom: "15px" }
+      ];
+
+      const antigo = document.getElementById('ejs-loader');
+      if (antigo) antigo.remove();
 
       const script = document.createElement('script');
-      script.src = 'https://emulatorjs.orgloader.js';
-      document.body.appendChild(script);
-    }
-
-    atualizarSaldo();
-  </script>
-</body>
-</html>
