@@ -7,7 +7,7 @@
   <style>
     * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
     body {
-      background: #0b0b12;
+      background: radial-gradient(circle at top, #1b0b2e 0%, #09090d 75%);
       color: #fff;
       margin: 0;
       padding: 12px;
@@ -20,7 +20,7 @@
       padding: 14px;
       margin-bottom: 14px;
     }
-    .header h1 { margin: 0 0 4px; font-size: 20px; color: #ffbf00; }
+    .header h1 { margin: 0 0 4px; font-size: 20px; color: #ffbf00; text-transform: uppercase; }
     .saldo-box {
       background: #000;
       display: inline-block;
@@ -59,7 +59,7 @@
       margin-bottom: 14px;
       border: 1px solid #2c2c3e;
     }
-    select, input[type="text"] {
+    select, input[type="text"], input[type="file"] {
       width: 100%;
       padding: 12px;
       margin: 7px 0;
@@ -67,7 +67,7 @@
       border: 1px solid #444;
       background: #1e1e2c;
       color: #fff;
-      font-size: 15px;
+      font-size: 14px;
     }
     .termo {
       font-size: 11px;
@@ -95,7 +95,6 @@
     .btn-pix { background: #00b894; }
     .btn-cartao { background: #0984e3; }
 
-    /* TELA CHEIA DO EMULADOR */
     #game-overlay {
       display: none;
       position: fixed;
@@ -126,66 +125,70 @@
 </head>
 <body>
 
-  <!-- TELA CHEIA DO JOGO -->
   <div id="game-overlay">
     <div id="barra-topo-jogo">
-      <span style="color:#ffbf00;font-weight:bold;font-size:13px;" id="titulo-barra">🕹️ ARCADE 1P/2P</span>
-      <button onclick="sairDoJogo()" style="background:#e74c3c;color:#fff;border:none;padding:6px 12px;border-radius:6px;font-weight:bold;">✖ Sair</button>
+      <span style="color:#ffbf00;font-weight:bold;font-size:13px;" id="titulo-barra">ARCADE 1P/2P</span>
+      <button onclick="sairDoJogo()" style="background:#e74c3c;color:#fff;border:none;padding:6px 12px;border-radius:6px;font-weight:bold;">Sair</button>
     </div>
     <div id="game"></div>
   </div>
 
   <div class="header">
-    <h1>🔥 NEO ARCADE FIGHTERS</h1>
+    <h1>NEO ARCADE FIGHTERS</h1>
     <div style="font-size:11px;color:#ff6b6b;">KOF '98 • KOF RUGAL • METAL SLUG • MORTAL KOMBAT</div>
-    <div class="saldo-box">🪙 <span id="saldo">0</span> FICHAS</div>
+    <div class="saldo-box"><span id="saldo">0</span> FICHAS</div>
   </div>
 
   <div class="card">
-    <div style="font-size:13px;color:#ffbf00;font-weight:bold;margin-bottom:10px;">🕹️ TOQUE NO JOGO E DEPOIS EM INSERIR FICHA</div>
+    <div style="font-size:13px;color:#ffbf00;font-weight:bold;margin-bottom:10px;">ESCOLHA A MÁQUINA (1 OU 2 JOGADORES)</div>
 
     <div class="catalogo-grid">
       <div class="jogo-card ativo" onclick="selecionarJogo(this, 'demo1', 'nes', 'https://jsdelivr.net', '', 'Arcade Clássico (Pronto)')">
-        <p class="jogo-titulo">⚡ Arcade Pronto</p>
+        <p class="jogo-titulo">Arcade Pronto</p>
         <p class="jogo-desc">Funciona Agora • 1P/2P</p>
       </div>
 
-      <div class="jogo-card" onclick="selecionarJogo(this, 'kof98', 'fbneo', 'kof98.zip', 'neogeo.zip', 'The King of Fighters \'98')">
-        <p class="jogo-titulo">🔥 KOF '98</p>
-        <p class="jogo-desc">Subir kof98.zip + neogeo.zip</p>
+      <div class="jogo-card" onclick="selecionarJogo(this, 'kof98', 'fbneo', 'kof98.zip', 'neogeo.zip', 'The King of Fighters 98')">
+        <p class="jogo-titulo">KOF '98</p>
+        <p class="jogo-desc">Versus 2P • kof98.zip</p>
       </div>
 
-      <div class="jogo-card" onclick="selecionarJogo(this, 'kof95', 'fbneo', 'kof95.zip', 'neogeo.zip', 'KOF \'95 (Omega Rugal)')">
-        <p class="jogo-titulo">💀 KOF '95 Rugal</p>
-        <p class="jogo-desc">Subir kof95.zip + neogeo.zip</p>
+      <div class="jogo-card" onclick="selecionarJogo(this, 'kof95', 'fbneo', 'kof95.zip', 'neogeo.zip', 'KOF 95 (Omega Rugal)')">
+        <p class="jogo-titulo">KOF '95 Rugal</p>
+        <p class="jogo-desc">Chefe Rugal • kof95.zip</p>
       </div>
 
       <div class="jogo-card" onclick="selecionarJogo(this, 'mslug', 'fbneo', 'mslug.zip', 'neogeo.zip', 'Metal Slug')">
-        <p class="jogo-titulo">🪖 Metal Slug</p>
-        <p class="jogo-desc">Subir mslug.zip + neogeo.zip</p>
+        <p class="jogo-titulo">Metal Slug</p>
+        <p class="jogo-desc">Co-op 2P • mslug.zip</p>
       </div>
 
       <div class="jogo-card" onclick="selecionarJogo(this, 'mk2', 'fbneo', 'mk2.zip', '', 'Mortal Kombat II')">
-        <p class="jogo-titulo">🐉 Mortal Kombat II</p>
-        <p class="jogo-desc">Subir mk2.zip</p>
+        <p class="jogo-titulo">Mortal Kombat II</p>
+        <p class="jogo-desc">Fatality • mk2.zip</p>
       </div>
 
       <div class="jogo-card" onclick="selecionarJogo(this, 'sf2', 'fbneo', 'sf2.zip', '', 'Street Fighter II')">
-        <p class="jogo-titulo">🥊 Street Fighter II</p>
-        <p class="jogo-desc">Subir sf2.zip</p>
+        <p class="jogo-titulo">Street Fighter II</p>
+        <p class="jogo-desc">Clássico • sf2.zip</p>
       </div>
     </div>
 
-    <button id="btn-inserir" class="btn btn-ficha" onclick="inserirFicha()">🪙 INSERIR FICHA E JOGAR</button>
+    <div style="background:#0d0d14;padding:10px;border-radius:8px;margin-bottom:8px;text-align:left;">
+      <label style="font-size:12px;color:#ffbf00;font-weight:bold;">Ou selecione o arquivo do jogo direto do celular (.zip/.nes/.sfc):</label>
+      <input type="file" id="arquivo-local" onchange="carregarArquivoCelular(this)">
+    </div>
+
+    <button id="btn-inserir" class="btn btn-ficha" onclick="inserirFicha()">INSERIR FICHA E JOGAR (TELA CHEIA)</button>
   </div>
 
   <div class="card">
-    <h3 style="margin-top:0;color:#ffbf00;">💰 Comprar Fichas</h3>
+    <h3 style="margin-top:0;color:#ffbf00;">Comprar Fichas</h3>
 
     <select id="pacote">
-      <option value="pacote_5">R$ 5,00 → 5 Fichas (6 Fichas no Pix!)</option>
-      <option value="pacote_10">R$ 10,00 → 10 Fichas (12 Fichas no Pix!)</option>
-      <option value="pacote_25">R$ 25,00 → 25 Fichas (30 Fichas no Pix!)</option>
+      <option value="pacote_5">R$ 5,00 -> 5 Fichas (6 Fichas no Pix!)</option>
+      <option value="pacote_10">R$ 10,00 -> 10 Fichas (12 Fichas no Pix!)</option>
+      <option value="pacote_25">R$ 25,00 -> 25 Fichas (30 Fichas no Pix!)</option>
     </select>
 
     <input type="text" id="cpf" placeholder="Digite seu CPF" maxlength="14">
@@ -195,14 +198,14 @@
       <span>Concordo que as fichas digitais são de consumo imediato e, após creditadas ou utilizadas nas partidas, <b>não são passíveis de estorno ou reembolso</b>.</span>
     </label>
 
-    <button class="btn btn-pix" onclick="comprar('pix')">⚡ PAGAR COM PIX / LIBERAR FICHAS</button>
-    <button class="btn btn-cartao" onclick="comprar('checkout_completo')">💳 CARTÃO DE CRÉDITO / DÉBITO / BOLETO</button>
+    <button class="btn btn-pix" onclick="comprar('pix')">PAGAR COM PIX (+20% FICHAS GRÁTIS)</button>
+    <button class="btn btn-cartao" onclick="comprar('checkout_completo')">CARTÃO DE CRÉDITO / DÉBITO / BOLETO</button>
 
     <div id="pix-area">
       <strong>Escaneie ou copie o Pix abaixo:</strong><br>
       <img id="pix-qr" src="" alt="QR Code Pix"><br>
       <textarea id="pix-copia" readonly></textarea>
-      <button class="btn btn-pix" onclick="copiarPix()">📋 COPIAR CÓDIGO PIX</button>
+      <button class="btn btn-pix" onclick="copiarPix()">COPIAR CÓDIGO PIX</button>
     </div>
   </div>
 
@@ -221,6 +224,26 @@
       document.querySelectorAll('.jogo-card').forEach(c => c.classList.remove('ativo'));
       elemento.classList.add('ativo');
       jogoAtual = { id, core, rom, bios, nome };
+    }
+
+    function carregarArquivoCelular(input) {
+      const file = input.files[0];
+      if (!file) return;
+      const urlLocal = URL.createObjectURL(file);
+      const ext = file.name.split('.').pop().toLowerCase();
+      let core = 'fbneo';
+      if (ext === 'nes') core = 'nes';
+      else if (ext === 'sfc' || ext === 'smc') core = 'snes';
+      else if (ext === 'bin' || ext === 'md') core = 'segaMD';
+
+      jogoAtual = {
+        id: 'local',
+        core: core,
+        rom: urlLocal,
+        bios: file.name.includes('kof') || file.name.includes('mslug') ? 'neogeo.zip' : '',
+        nome: file.name
+      };
+      alert('Jogo carregado do celular: ' + file.name + '\nAgora toque em INSERIR FICHA E JOGAR!');
     }
 
     async function atualizarSaldo() {
@@ -258,35 +281,3 @@
         atualizarSaldo();
       } else if (data.tipo === 'pix') {
         document.getElementById('pix-area').style.display = 'block';
-        document.getElementById('pix-qr').src = `data:image/png;base64,${data.qr_code_base64}`;
-        document.getElementById('pix-copia').value = data.qr_code;
-      } else if (data.tipo === 'link') {
-        window.location.href = data.init_point;
-      }
-    }
-
-    function copiarPix() {
-      const campo = document.getElementById('pix-copia');
-      campo.select();
-      document.execCommand('copy');
-      alert('Código Pix copiado!');
-    }
-
-    async function inserirFicha() {
-      const res = await fetch('/api/inserir-ficha', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: USER_ID, jogo: jogoAtual.nome })
-      });
-
-      const data = await res.json();
-      if (data.erro) {
-        alert(data.erro + '\n\nDigite seu CPF abaixo e toque em PAGAR COM PIX / LIBERAR FICHAS.');
-        return;
-      }
-
-      atualizarSaldo();
-
-      // Entra em Tela Cheia Real no navegador do celular
-      const el = document.documentElement;
-      if (el.requestFullscreen) el.requestFullscreen().catch(() => {});
